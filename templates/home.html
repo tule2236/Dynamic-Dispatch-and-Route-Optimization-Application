@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1egkppa_4el0N36w_DP7mOCTqlU4EDRI&callback=myMap"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>     
+    <style>
+     #map {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          }
+     html {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          }
+        
+     body{
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          background: #76b852; /* fallback for old browsers */
+          background: -webkit-linear-gradient(right, #76b852, #87CEFA);
+          background: -moz-linear-gradient(right, #76b852, #87CEFA);
+          background: -o-linear-gradient(right, #76b852, #87CEFA);
+          background: linear-gradient(to left, #76b852, #87CEFA);
+          font-family: "Roboto", sans-serif;
+          -webkit-font-smoothing: antialiased;
+           -moz-osx-font-smoothing: grayscale;      
+          }
+     .button {
+           background-color: #008B8B; /* blue */
+           border: none;
+           color: white;
+           padding: 15px 32px;
+           text-align: center;
+           text-decoration: none;
+           display: inline-block;
+           border-radius: 12px;
+           font-size: 16px;
+              }
+     #dispatchPart{
+           position: absolute;
+           margin: 4px;
+           left: 0;
+           top: 0;
+           width:29%;
+           height:80%;
+           background: rgba(76, 175, 80, 0.6);
+           font-family: "Roboto", sans-serif;
+           -webkit-font-smoothing: antialiased;
+           -moz-osx-font-smoothing: grayscale;  
+           border:2px solid #ACD8F0;
+           border-radius: 12px;
+           overflow:auto;
+           z-index: 2;         
+            }
+     #manual{
+           position: absolute;
+           top: 0;
+           left: 35%;
+           text-align: center;
+           font: 20px Georgia;
+           color: #5C5C5C;
+           z-index: 2;
+           }
+     #time{
+           position: absolute;
+           top: 0;
+           right: 10%;
+           background: blue;
+           text-align: center;
+           font: 20px Droid Serif;
+           color: #5C5C5C;
+           z-index: 2;
+           border:2px solid #ACD8F0;
+           }
+    #chatbox {  
+      margin: 4px;
+    background:#fff;
+    height:70%;
+    width:90%;
+    border:2px solid #ACD8F0;
+    overflow:auto; }
+     #ListJobs {
+           position: absolute;
+           margin: 4px;
+           right: 0;
+           top: 5%;
+           height:40%;
+           background: rgba(76, 175, 80, 0.6);
+           font-family: "Roboto", sans-serif;
+           -webkit-font-smoothing: antialiased;
+           -moz-osx-font-smoothing: grayscale;  
+           border:2px solid #ACD8F0;
+           border-radius: 12px;
+           overflow:auto;
+           z-index: 2;  
+             }
+#Jobtable{
+           border: 1px solid black;
+         }
+#Jobtable tr{
+           border: 1px solid black;}
+#Jobtable td{
+           border: 1px solid black;}
+ </style>
+    
+    </head>
+<body onload="display_ct();">
+    {% if session['logged_in'] %}
+
+    <div id="manual"> 
+      <button id="Dispatch" class="button" data-toggle="collapse" data-target="#dispatchPart">Dispatch Jobs</button>
+      <button id="Traffic" class="button" onclick="showtraffic()">Traffic</button>
+      <button id="UpdateInfo" class="button">Update</button>
+    </div>
+    <div id="time"> 
+       <span id='ct' style="color:white"></span>
+    </div>
+    <div id="ListJobs"></div> 
+    <div id="map"></div> 
+    <div id="dispatchPart" class="collapse">
+        <div id="dynamicInput"></div>
+        <button id="assigndriver">Assign Driver</button>
+        <p id="msg"></p>
+        <input type="file" id="file" name="file" />
+        <button id="upload">Upload</button>
+        <button id="assignJob">AssignJobs</button>
+        <div id="chatbox">
+          {{content|safe }}
+        </div> 
+        <div class="inputtext">
+             <input name="usermsg" type="text" id="usermsg" />
+             <button  id="submitmsg">Submit</button>
+             <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#commandlist" style="position: relative; z-index: 2">Command List</button>    
+        </div>  
+    </div>    
+<script>
+
+
+     var myMarker = Array();
+     var myjobMarker = Array();
+
+$('#dispatchPart').on('shown.bs.collapse', function () {
+elem = document.getElementById('chatbox');
+elem.scrollTop = elem.scrollHeight-elem.clientHeight;
+});
+//-------------------------Command start
+
+
+function attachmsg(msg){
+          sable = 0;
+    if (elem.scrollTop > elem.scrollHeight - elem.clientHeight-20)
+{ var sable = 1 };
+var divName = 'chatbox';
+var newDiv = document.createElement('div');
+var selectHTML = "";
+selectHTML += msg
+newDiv.innerHTML = selectHTML;
+document.getElementById(divName).appendChild(newDiv);
+if (sable == 1) { 
+    elem.scrollTop = elem.scrollHeight-elem.clientHeight;
+}
+}
+
+//assign jobs
+$("#assignJob").click(function () {
+ attachmsg("hello")
+$.ajax({    
+ url: "{{ url_for('assignJob') }}",
+                  data: {'text':"jobs"},
+                  dataType: 'text',
+                  type: 'post',
+                  success: function (response) {
+                    alert(response)
+                   remsg=JSON.parse(response)
+                   alert(remsg[0][0])
+                   attachmsg(remsg[0])                                },
+                   error: function (response) {
+                      $('#msg').html(response); // display error response from the PHP script
+                  }
+              });
+
+})
+//-------------------------------------------------
+ $("#submitmsg").click(function () {
+ var clientmsg = $("#usermsg").val();
+ attachmsg(clientmsg)
+$.ajax({    
+ url: "{{ url_for('robot') }}",
+
+                  data: {'text':clientmsg},
+                  type: 'post',
+                  success: function (response) {
+                   remsg=JSON.parse(response)
+                   attachmsg(remsg.robot)                               },
+                   error: function (response) {
+                      $('#msg').html(response); // display error response from the PHP script
+                  }
+              });
+
+})
+
+//-------------------------Command end
+          if (window.File && window.FileReader && window.FileList && window.Blob) {
+              //  alert(' Great success! All the File APIs are supported.');
+          } else {
+              alert('The File APIs are not fully supported in this browser.');
+          }
+ 
+      function initialWorker(){
+          var assigndata ={};
+          var drivername
+          var myObj;
+          var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function () {
+              if (this.readyState == 4 && this.status == 200) {
+           
+                  myObj = JSON.parse(this.responseText);
+                 
+                  for (var i = 0; i < myObj.length; i++) {
+                      myMarker[myObj[i][0]]=addmarker(myObj[i][2], myObj[i][1], myObj[i][0],image1)
+                      infoWindow = new google.maps.InfoWindow({ content: myObj[i][0]});               
+                      myMarker[myObj[i][0]].infowindow=infoWindow;
+                      myMarker[myObj[i][0]].infowindow.open(map,myMarker[myObj[i][0]]);
+                      myMarker[myObj[i][0]].addListener('click', function() { return this.infowindow.open(map, this);});                               
+                                                         }
+
+                                                               }
+                                                      }
+          xmlhttp.open("GET", "{{ url_for('markcar') }}", true);
+          xmlhttp.send();
+//-------------------------------------Load Job from database
+$.ajax({    
+ url: "{{ url_for('getAvailableJobs') }}",
+                  data: {'text':"getjob"},
+                  dataType: 'text',
+                  type: 'post',
+                  success: function (response) {
+                    alert("work")
+                    alert(response)
+                   remsg=JSON.parse(response) 
+                   //alert(remsg[1][0][1])
+                   jobmarker(response)
+                   attachmsg(remsg[0]) 
+                         },
+                   error: function (response) {
+                      $('#msg').html(response); // display error response from the PHP script
+                  }
+              });
+//---------------------------------------------------------------
+
+}
+
+
+          function myMap() {
+              var mapOptions = {
+                  center: new google.maps.LatLng(1.3521, 103.8198),
+                  zoom: 12,
+                  streetViewControl: true
+              }
+              map = new google.maps.Map(document.getElementById("map"), mapOptions);
+              trafficLayer = new google.maps.TrafficLayer();
+              image1 =  "{{url_for('static', filename = 'Icon/vehicle.png')}}";
+              image3 =  "{{url_for('static', filename = 'Icon/location-arrow.png')}}";
+              image0 =  "{{url_for('static', filename = 'Icon/job0.png')}}";
+              image2 =  "{{url_for('static', filename = 'Icon/job.png')}}";
+              image4 =  "{{url_for('static', filename = 'Icon/job1.png')}}";
+              image5 =  "{{url_for('static', filename = 'Icon/job2.png')}}";
+              totaljobarraytest=[image0,image2,image4,image5];
+              infowindow = new google.maps.InfoWindow();
+              google.maps.event.addDomListener(document.getElementById('Traffic'), 'click', toggleTraffic);
+              
+          }
+          google.maps.event.addDomListener(window, 'load', myMap);
+          google.maps.event.addDomListener(window, 'load', initialWorker);
+          function showtraffic() {
+              if (trafficLayer.getMap() == null) {
+                  //traffic layer is disabled.. enable it
+                  trafficLayer.setMap(map);
+              } else {
+                  //traffic layer is enabled.. disable it
+                  trafficLayer.setMap(null);
+              }
+          }
+
+          function placemarker(lat, lng, marker) {
+              marker.setPosition(new google.maps.LatLng(lat, lng));
+              map.panTo(new google.maps.LatLng(lat, lng));
+          }
+
+          function addmarker(lat, lng, vtitle, image) {
+      
+              var latlng = new google.maps.LatLng(lat, lng);
+              var marker = new google.maps.Marker({
+                  position: latlng,
+                  title: vtitle,
+                  map: map,
+                  icon: image
+              });
+              marker.setMap(map);
+              return marker;
+          }
+
+          function display_c() {
+              var refresh = 1000; // Refresh rate in milli seconds
+              mytime = setTimeout('display_ct()', refresh)
+          }
+          function display_ct() {
+              var strcount
+              var x = new Date()
+              var x1 = x.getMonth() + "/" + x.getDate() + "/" + x.getYear();
+              x1 = x1 + " - " + x.getHours() + ":" + x.getMinutes() + ":" + x.getSeconds();
+              document.getElementById('ct').innerHTML = x1;
+
+              tt = display_c();
+          }
+          function geocodeAddress(address) {
+              var geocoder = new google.maps.Geocoder();
+              //alert(address);
+              geocoder.geocode({ 'address': address }, function (results, status) {
+                  if (status === 'OK') {
+                      alert(results[0].geometry.location);
+
+                  } else {
+                      alert('Geocode was not successful for the following reason: ' + status);
+                  }
+              });
+          }
+//---------------------------------------button functions--Start
+ $('#upload').on('click', function () {
+              var file_data = $('#file').prop('files')[0];
+              var form_data = new FormData();
+              form_data.append('file', file_data);
+              $('#msg').html("<p style='color:red;'>uploading....</p>");
+              $.ajax({
+                  url: "{{ url_for('uploadfile') }}",
+                  dataType: 'text', // what to expect back from the PHP script
+                  cache: false,
+                  enctype: 'multipart/form-data',
+                  contentType: false,
+                  processData: false,
+                  data: form_data,
+                  type: 'post',
+                  success: function (response) {
+      rspmsg=JSON.parse(response)
+                  //alert(rspmsg[0]) 
+
+//jobmarker(rspmsg)
+                 // attachmsg(rspmsg[0])
+//-----------------------------------------------------------dumb way to be replaced
+    if (rspmsg[0]=='Process jobs successfully!!!')
+    {
+    var nind=0;
+      for (var i = 0; i < rspmsg[1].length; i++) { 
+                      alert(totaljobarraytest[1][i] )
+      for (var j=0;j<rspmsg[1][i].length;j++){  
+                       myjobMarker[nind] = addmarker(rspmsg[1][i][j][1], rspmsg[1][i][j][2], "test", totaljobarraytest[i]);
+      nind++;
+      }
+      }
+    }
+//------------------------------------------------------------------------------------
+                           },
+                   error: function (response) {
+                      $('#msg').html(response); // display error response from the PHP script
+                  }
+              });
+          });
+//---------------------------------------button functions--end
+//-----------------------Mark car function
+function jobmarker(response){
+rspmsg=JSON.parse(response)
+  alert(rspmsg[0])
+  alert(rspmsg[1][0])
+if (rspmsg[0]=='Process jobs successfully!!!')
+    {
+	for (var i = 0; i < rspmsg[1].length; i++) { 
+                      alert(totaljobarraytest[1][i] )
+      		for (var j=0;j<rspmsg[1][i].length;j++){  
+            //alert(rspmsg[1][i][j][1])
+                       myjobMarker[rspmsg[1][i][j][0]] = addmarker(rspmsg[1][i][j][1], rspmsg[1][i][j][2], rspmsg[1][i][j][0], totaljobarraytest[i]);
+     
+                     }
+             }
+    }
+}
+
+//-----------------------
+</script>      
+{% else %} 
+ <a href="{{ url_for('main') }}">log in</a>
+{% endif %}    
+    </body>
+</html>

@@ -1,0 +1,28 @@
+<div id="dispatchsinglejob">
+  Job Address:<br>
+  <input type="text" id="jobaddress" >
+  <br>
+  Job Description:<br>
+  <input type="text" id="jobdesc" >
+  <br><br>
+  <button id="dispatch1job">Submit Job</button>
+<script>$("#dispatch1job").click(function () {
+alert("start")
+ var jobaddress = $("#jobaddress").val();
+ var jobdesc = $("#jobdesc").val()
+$.ajax({    
+ url:  "uploadsinglejob",
+                  data: {'jobaddress':jobaddress,'jobdesc':jobdesc},
+                  type: 'post',
+		  dataType: 'text', // what to expect back from the PHP script
+                  success: function (response) {
+		   var msg=JSON.parse(response)
+                   alert("done")                              },
+                   error: function (response) {
+                      $('#msg').html(response); // display error response from the PHP script
+                  }
+              });
+
+})
+</script>
+</div>

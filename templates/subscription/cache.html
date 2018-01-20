@@ -1,0 +1,27 @@
+{% load cache %}
+{% extends "subscription/index.html" %}
+{% block title %}My Hello Page{% endblock %}
+{% cache 500 content %}
+{% block content %}
+
+Hello World!!!<p>Today is {{today}}</p>
+We are
+{% if today.day == 1 %}
+
+the first day of month.
+{% elif today == 30 %}
+
+the last day of month.
+{% else %}
+
+I don't know.
+{%endif%}
+
+<p>
+   {% for day in days_of_week %}
+   {{day}}
+</p>
+
+{% endfor %}
+{% endblock %}
+{% endcache %}
