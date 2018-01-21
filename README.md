@@ -3,13 +3,12 @@ The application uses Unsupervised Learning to cluster job lists and apply the Hu
 # Motivation
 Skyfy Technology which is provides vehicle tracking and fleet management system on subscription basis. While interning there, I have worked on the Dynamic Job Dispatch algorithm on Mobile and Web platform. Dispatch function has proved to increase productivity and efficiency by more than two times by assigning the most ideal list of jobs to an appropriate worker. Moreover, I also designed the Route Optimization algorithm that plan the shortest route for the assigned list of jobs given the dispatch decision, workload, and job descriptions. This function helps to reduce delivery timing and cost by at least 10%.
 # Prerequisites
-```
-Python
-Dispy
-Flask
-MySQL
-Android Studio
-```
+- [Python](https://www.python.org/downloads/)
+- [Dispy](http://dispy.sourceforge.net/dispy.html)
+- [Flask](http://flask.pocoo.org/)
+- [MySQL](https://www.mysql.com/downloads/)
+- [Android](https://developer.android.com/index.html)
+
 # Dynamic Dispatch Algorithm
 The application can take the list of jobs through the uploaded excel file or every single job that a user inputs into the interface. The input data would contain information such as job addresses, workloads and job descriptions.  
 
