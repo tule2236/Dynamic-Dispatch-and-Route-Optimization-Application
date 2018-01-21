@@ -2,8 +2,15 @@
 The application uses Unsupervised Learning to cluster job lists and apply the Hungarian algorithm to assign the most ideal workers to the clustered jobs. Afterward, the application applies Randomized Optimization_ Simulated Annealing to find the optimized route. 
 # Motivation
 Skyfy Technology which is provides vehicle tracking and fleet management system on subscription basis. While interning there, I have worked on the Dynamic Job Dispatch algorithm on Mobile and Web platform. Dispatch function has proved to increase productivity and efficiency by more than two times by assigning the most ideal list of jobs to an appropriate worker. Moreover, I also designed the Route Optimization algorithm that plan the shortest route for the assigned list of jobs given the dispatch decision, workload, and job descriptions. This function helps to reduce delivery timing and cost by at least 10%.
-
-## Dynamic Dispatch Algorithm
+# Prerequisites
+```
+Python
+Dispy
+Flask
+MySQL
+Android Studio
+```
+# Dynamic Dispatch Algorithm
 The application can take the list of jobs through the uploaded excel file or every single job that a user inputs into the interface. The input data would contain information such as job addresses, workloads and job descriptions.  
 
 ![alt text](https://user-images.githubusercontent.com/30711638/35186355-dc53c538-fde0-11e7-9ad2-990abbddc8e7.png)
@@ -19,10 +26,10 @@ The application can **dispatch jobs dynamically**, which means that every time u
 
 The application has **two user sides**: one for the **managers** to dispatch the jobs, and one for the **drivers** to view the dispatched jobs and update the job status when the drivers have finished their assigned tasks. The manager-side interface is built on [Flask](http://flask.pocoo.org/), a micro web framework written in Python while the driver-side interface is built on [Android](https://developer.android.com/studio/index.html).  
 
-## Distributed Computing using Dispy module
+# Distributed Computing using Dispy module
 In deployment, this application will be used by many users. Considering Skyfy Technology, the company that I interned, currently have approximately 1000 subscribers and more than 3000 vehicles tracked. If for any given time, 1% of the subscribers process their jobs on the application (either managers upload and dispatch new jobs, or drivers update the job status from "assigned" to "finished"), our application has to process 10 different job lists through three algorithms which are clustering, assignment, route optimization and display the results on the map. Each job list might contain 20 to 200 jobs depending on the company sizes, thus resulting a huge amount of jobs for our application to process. In order to prevent slow processing time, or even worse, congestion, I use [Dispy](http://dispy.sourceforge.net/dispy.html), an API that support **distributed computing** written in Python to share and process the program on multiple computers, improving efficiency and performance. 
 
-## 3-tier Architecuture
+# 3-tier Architecuture
 I design the Dynamic Dispatch application following a 3-tier architecture which are well-known to shorten time to market and reduces the cost to integrate new features into software. It can also maximize user adoption through the flexibility it provides when integrating analytics into existing  infrastruture and application workflows.  
 3-tier architecture is a client-server architecture in which the user interface, functional process logic and data storage are developed and maintained as independent modules on separate platforms:
 - **Presentation Layer**: sends unassigned jobs to browsers and displays them as light blue markers. Then, after receiving the clustered jobs from the application layer, displaying them on the *manager interface* with different colors for different groups and send these assigned jobs to *driver interface*. If the drivers finish their jobs, they can send signals to the application and the job markers would be disappeared on the map.  The layer is written in HTML, Javascript and jQuery.
