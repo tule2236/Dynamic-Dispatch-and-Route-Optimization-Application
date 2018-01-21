@@ -21,7 +21,7 @@ I design the Dynamic Dispatch application following a 3-tier architecture which 
 
 # Dynamic Dispatch Algorithm
 The application can take the list of jobs through the uploaded excel file or every single job that a user inputs into the interface. The input data would contain information such as job addresses, workloads and job descriptions.  
-
+![alt text](https://user-images.githubusercontent.com/30711638/35192055-b3b9dfaa-fe57-11e7-905a-62c659455634.png)
 ![alt text](https://user-images.githubusercontent.com/30711638/35186355-dc53c538-fde0-11e7-9ad2-990abbddc8e7.png)
 After uploading, the [Google Geocoding API](https://developers.google.com/maps/documentation/javascript/geocoding) converts the job addresses into geographic coordinates, which are used to place markers on the map. The markers of unassigned jobs have light blue color.  
 ![alt text](https://user-images.githubusercontent.com/30711638/35186909-05c32da6-fdea-11e7-978f-94c641a6e83c.png)  
